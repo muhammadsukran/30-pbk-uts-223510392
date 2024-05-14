@@ -1,6 +1,6 @@
 <template>
   <div class="background">
-    <img src="https://i.ibb.co/7bWT6Lk/image.png" />
+    <img src="https://serving.photos.photobox.com/435991185596b28bf740fe16edf12dafe365205ca8754ba6f0ee052ff1a7be6dd2c14af1.jpg" />
   </div>
   <div class="container">
     <nav class="navbar navbar-light">
