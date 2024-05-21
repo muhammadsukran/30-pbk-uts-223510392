@@ -1,5 +1,5 @@
 <template>
-    <div class="Post">
+  <div class="Post">
     <div class="post">
       <form @submit.prevent="addPost">
         <h1>Postingan</h1>
@@ -30,17 +30,19 @@
       <option v-for="(post, index) in posts" :key="index" :value="post.username">{{ post.username }}</option>
     </select>
   </div>
-  </template>
-  
-  <script setup>
-import { ref, reactive, onMounted, watch } from 'vue';
+</template>
+
+<script setup>
+import { ref, reactive, onMounted, watch, defineProps } from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const username = ref('');
-const email = ref('');
-const description = ref('');
-const imageLink = ref('');
+const { initialUsername, initialEmail, initialDescription, initialImageLink } = defineProps();
+
+const username = ref(initialUsername || '');
+const email = ref(initialEmail || '');
+const description = ref(initialDescription || '');
+const imageLink = ref(initialImageLink || '');
 const posts = reactive([]);
 const showPostsList = ref(false);
 const selectedUsername = ref('');
@@ -104,39 +106,36 @@ function addPost() {
 }
 </script>
 
-  
-  <style>
+<style>
   .Post{
-  position: fixed;
-  width: 20%;
-  top: 15%;
-  left: 42%;
-}
-.Post h1{
-  color: white;
-  font-weight: bold;
-  font-family: Courier, monospace;
-  text-align: center;
-}
+    position: fixed;
+    width: 20%;
+    top: 15%;
+    left: 42%;
+  }
+  .Post h1{
+    color: white;
+    font-weight: bold;
+    font-family: Courier, monospace;
+    text-align: center;
+  }
 
-.form-group label {
-  color: white;
-}
-.form-group input {
-  background-color: transparent;
-  color: white;
-  backdrop-filter: blur(5px);
-}
-.form-group input::placeholder{
-  color: white;
-}
-.b1{
-  margin-top: 10px;
-}
-.b2{
-  margin-top: 10px;
-  margin-left: 10px;
-}
-
-  </style>
-  
+  .form-group label {
+    color: white;
+  }
+  .form-group input {
+    background-color: transparent;
+    color: white;
+    backdrop-filter: blur(5px);
+  }
+  .form-group input::placeholder{
+    color: white;
+  }
+  .b1{
+    margin-top: 10px;
+  }
+  .b2{
+    margin-top: 10px;
+    margin-left: 10px;
+  }
+</style>
