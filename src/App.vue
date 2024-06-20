@@ -1,76 +1,40 @@
 <template>
-  <div class="background">
-    <img src="https://serving.photos.photobox.com/435991185596b28bf740fe16edf12dafe365205ca8754ba6f0ee052ff1a7be6dd2c14af1.jpg" />
-  </div>
-  <div class="container">
-    <nav class="navbar navbar-light">
-      <button @click="activateComponent('Todos')" :class="{ 'active': activeComponent === 'Todos' }" class="navbar-brand btn btn-primary" style="color: white;">Todos</button>
-      <button @click="activateComponent('Post')" :class="{ 'active': activeComponent === 'Post' }" class="navbar-brand btn btn-primary" style="color: white;">Posts</button>
-    </nav>
-    <div v-if="activeComponent === 'Todos'" class="mt-5">
-      <Todos :todosActive="true" :initialKegiatanList="initialKegiatanList" />
-    </div>
-    <div v-if="activeComponent === 'Post'" class="mt-5">
-      <Post :initialUsername="'InitialUsername'" :initialEmail="'InitialEmail'" :initialDescription="'InitialDescription'" :initialImageLink="'InitialImageLink'" />
-    </div>
-  </div>
+  <q-layout view="hHh lpR fFf">
+    <q-header class="bg-header" style="background-color: #3B3A3A;">
+      <q-toolbar>
+        <q-toolbar-title>
+          Uas PBK
+        </q-toolbar-title>
+        <router-link to="/todos" class="nav-btn" active-class="active-btn">
+          <q-btn flat label="Todos" />
+        </router-link>
+        <router-link to="/post" class="nav-btn" active-class="active-btn">
+          <q-btn flat label="Posts" />
+        </router-link>
+        <router-link to="/album" class="nav-btn" active-class="active-btn">
+          <q-btn flat label="Album" />
+        </router-link>
+      </q-toolbar>
+    </q-header>
+
+    <q-page-container>
+      <router-view />
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import Todos from './components/Tudos.vue';
-import Post from './components/Post.vue';
-
-const activeComponent = ref('Todos');
-const initialKegiatanList = [
-  { judul: "Work Out", status: "belum selesai" },
-  { judul: "Belajar skill baru", status: "selesai" },
-  { judul: "Jalan-jalan", status: "belum selesai" }
-];
-
-function activateComponent(component) {
-  activeComponent.value = component;
-}
-
 </script>
 
-<style>
-  .container {
-    max-width: 100%; 
-  }
+<style lang="scss">
+@import 'quasar/src/css/index.sass';
 
-  .navbar {
-    position: fixed; 
-    display: flex;
-    top: -10%;
-    max-width: 100%;
-    transform: translateX(-60%);
-    margin-top: -335px;
-    z-index: 1000;
-    width: 100%;
-  }
-  .navbar button {
-    position: relative;
-    margin-left: 100px;
-  }
+.nav-btn {
+  margin-right: 8px;
+}
 
-  .active {
-    background-color: #0056b3;
-  }
-
-
-  .background img{
-    position: fixed;
-    top: 0;
-    left: 0;
-    min-height: 90%;
-    min-width: 1500px;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: -2;
-    object-fit: cover;
-    -webkit-background-size:cover; -moz-background-size:cover; -o-background-size:cover; background-size: cover;
-    filter: brightness(0.8);
-  }
+.active-btn .q-btn__content {
+  font-weight: 600;
+  border-bottom: 1.5px solid lightyellow;
+}
 </style>

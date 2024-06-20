@@ -1,74 +1,69 @@
 <template>
-  <div class="Post">
-    <div class="post">
-      <form @submit.prevent="addPost">
-        <h1>Postingan</h1>
-        <div class="form-group">
-          <label for="username">Username :</label>
-          <input v-model="username" type="text" class="form-control" id="username" placeholder="Username" required>
-        </div>
-        <div class="form-group">
-          <label for="email">Email :</label>
-          <input v-model="email" type="email" class="form-control" id="email" placeholder="Email" required>
-        </div>
-        <div class="form-group">
-          <label for="description">Description :</label>
-          <input v-model="description" type="text" class="form-control" id="description" placeholder="Description" required>
-        </div>
-        <div class="form-group">
-          <label for="imageLink">Image Link :</label>
-          <input v-model="imageLink" type="text" class="form-control" id="imageLink" placeholder="Image Link" required>
-        </div>
-        <button type="submit" class="btn btn-primary b1">Post</button>
-        <button @click="showPostsList = !showPostsList" class="btn btn-secondary ml-3 b2">
-          {{ showPostsList ? 'Hide' : 'Show' }} Posts
-        </button>
-      </form>
+  <q-page class="q-pa-md">
+    <q-form @submit.prevent="addPost">
+      <q-input filled v-model="username" label="Username" class="custom-input" input-class="custom-input-text" />
+      <q-input filled v-model="email" label="Email" class="custom-input" input-class="custom-input-text" />
+      <q-input filled v-model="description" label="Description" class="custom-input" input-class="custom-input-text" />
+      <q-input filled v-model="imageLink" label="Image Link" class="custom-input" input-class="custom-input-text" />
+      <div class="q-mt-md">
+        <q-btn style="background-color: lightslategrey;" label="Post" type="submit" />
+      </div>
+    </q-form>
+    <div class="select-container q-mt-md">
+      <label for="usernameSelect">Pilih User</label>
+      <select id="usernameSelect" v-model="selectedPhoto" @change="showPhotoDetailsById">
+        <option  value="">-- Pilih User --</option>
+        <option v-for="photo in photos" :key="photo.id" :value="photo.id">
+          {{ photo.title }}
+        </option>
+      </select>
     </div>
-    <select v-if="showPostsList" v-model="selectedUsername" class="mt-3 btn btn-success">
-      <option value="">Select Username</option>
-      <option v-for="(post, index) in posts" :key="index" :value="post.username">{{ post.username }}</option>
-    </select>
-  </div>
+  </q-page>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch, defineProps } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const { initialUsername, initialEmail, initialDescription, initialImageLink } = defineProps();
-
-const username = ref(initialUsername || '');
-const email = ref(initialEmail || '');
-const description = ref(initialDescription || '');
-const imageLink = ref(initialImageLink || '');
-const posts = reactive([]);
-const showPostsList = ref(false);
-const selectedUsername = ref('');
+const username = ref('');
+const email = ref('');
+const description = ref('');
+const imageLink = ref('');
+const posts = ref([]);
+const photos = ref([]);
+const selectedPhoto = ref('');
 
 async function fetchPosts() {
   try {
     const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
-    posts.value = response.data;
+    posts.value = response.data.slice(0, 10); 
   } catch (error) {
     console.error('Error fetching posts:', error);
   }
 }
 
-onMounted(fetchPosts);
+async function fetchPhotos() {
+  try {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/photos');
+    photos.value = response.data.slice(0, 3); 
+  } catch (error) {
+    console.error('Error fetching photos:', error);
+  }
+}
 
-function showPostDetailsByUsername(username) {
-  const selectedPost = posts.find(post => post.username === username);
-  if (selectedPost) {
+onMounted(() => {
+  fetchPosts();
+  fetchPhotos();
+});
+
+function showPhotoDetailsById() {
+  const selectedPhotoObj = photos.value.find(photo => photo.id === selectedPhoto.value);
+  if (selectedPhotoObj) {
     Swal.fire({
-      title: `Post by ${username}`,
+      title: selectedPhotoObj.title,
       html: `
-        <p><strong>Email:</strong></p>
-        <p>${selectedPost.email}</p>
-        <p><strong>Description:</strong></p>
-        <p>${selectedPost.description}</p>
-        <img src="${selectedPost.imageLink}" alt="Post image" style="max-width: 100%; height: auto;">
+        <img src="${selectedPhotoObj.url}" alt="Photo image" style="max-width: 100%; height: auto;">
       `,
       confirmButtonText: 'OK',
       confirmButtonColor: '#007bff',
@@ -76,10 +71,8 @@ function showPostDetailsByUsername(username) {
         container: 'my-swal'
       }
     });
-  } 
+  }
 }
-
-watch(selectedUsername, showPostDetailsByUsername);
 
 function addPost() {
   const newPost = {
@@ -92,7 +85,7 @@ function addPost() {
 
   axios.post('https://jsonplaceholder.typicode.com/posts', newPost)
     .then(response => {
-      posts.unshift(newPost);
+      posts.value.unshift(newPost);
       username.value = '';
       email.value = '';
       description.value = '';
@@ -106,36 +99,38 @@ function addPost() {
 }
 </script>
 
-<style>
-  .Post{
-    position: fixed;
-    width: 20%;
-    top: 15%;
-    left: 42%;
-  }
-  .Post h1{
-    color: white;
-    font-weight: bold;
-    font-family: Courier, monospace;
-    text-align: center;
-  }
-
-  .form-group label {
-    color: white;
-  }
-  .form-group input {
-    background-color: transparent;
-    color: white;
-    backdrop-filter: blur(5px);
-  }
-  .form-group input::placeholder{
-    color: white;
-  }
-  .b1{
-    margin-top: 10px;
-  }
-  .b2{
-    margin-top: 10px;
-    margin-left: 10px;
-  }
+<style scoped>
+.q-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.custom-input .q-field__control {
+  border: 1px solid gray;
+  background-color: white;
+}
+.custom-input .q-field__label {
+  color: white;
+}
+.custom-input input {
+  color: white;
+}
+.custom-input-text::placeholder {
+  color: white !important;
+}
+.select-container {
+  width: 100%;
+  max-width: 400px;
+}
+.select-container select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid gray;
+  border-radius: 4px;
+}
+.select-container label {
+  display: block;
+  margin-bottom: 8px;
+  color: white;
+}
 </style>
